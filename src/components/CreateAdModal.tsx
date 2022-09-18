@@ -3,15 +3,16 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { Check, GameController } from "phosphor-react";
 import { FormEvent, useState } from "react";
-import { Game } from "../App";
 import { Input } from "../components/Form/Input";
 import { api } from "../services/api";
+import { IGame } from "../types/IGame";
 
 interface CreateAdModalProps {
-  games: Game[];
+  games: IGame[];
+  closeModal: () => void;
 }
 
-export const CreateAdModal = ({ games }: CreateAdModalProps) => {
+export const CreateAdModal = ({ games, closeModal }: CreateAdModalProps) => {
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
 
@@ -28,7 +29,7 @@ export const CreateAdModal = ({ games }: CreateAdModalProps) => {
       await api.post(`games/${data?.game}/ad`, {
         name: data?.name,
         discord: data?.name,
-        yearPlaying: Number(data?.yearsPlaying),
+        yearsPlaying: Number(data?.yearsPlaying),
         weekDays: weekDays?.map(Number),
         hourStart: data?.hourStart,
         hourEnd: data?.hourEnd,
@@ -36,6 +37,10 @@ export const CreateAdModal = ({ games }: CreateAdModalProps) => {
       });
 
       alert("Anúncio criado com sucesso");
+      setUseVoiceChannel(false);
+      setWeekDays([]);
+
+      closeModal();
     } catch (error) {
       alert("Erro ao criar o anúncio");
     }
